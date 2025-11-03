@@ -53,6 +53,7 @@ def phasor_plot(freqs, amps, phases, duration=1.0, fs=1000, save_path=None, titl
     time_line, = ax_time.plot([], [], 'b-', linewidth=1.5)
     time_point, = ax_time.plot([], [], 'ro', markersize=8)
     # Animationsfunktion
+    frame_counter = [1]  # mutable counter for closure
     def animate(i):
         # Phasor-Plot
         for arr in arrow_objs:
@@ -74,6 +75,8 @@ def phasor_plot(freqs, amps, phases, duration=1.0, fs=1000, save_path=None, titl
         # Zeitbereichs-Plot
         time_line.set_data(t[:i+1], signal.real[:i+1])
         time_point.set_data([t[i]], [signal.real[i]])
+
+        # PNG-Frame Speicherung entfernt
         return arrow_objs + circle_objs + [sum_line, time_line, time_point]
     # Weniger Frames, aber Animation bis zur vollen Dauer
     n_frames = 400  # z.B. 400 Frames für das ganze GIF
@@ -88,24 +91,32 @@ def phasor_plot(freqs, amps, phases, duration=1.0, fs=1000, save_path=None, titl
     if not os.path.exists(out_dir):
         os.makedirs(out_dir, exist_ok=True)
     if as_video:
-            video_path = os.path.join(out_dir, f'{save_path}.mp4') if save_path else os.path.join(out_dir, 'phasor_animation.mp4')
-            ffmpeg_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../_nosync_ffmpeg/bin/ffmpeg.exe'))
-            print(f"[DEBUG] ffmpeg_path resolved to: {ffmpeg_path}")
-            if not os.path.isfile(ffmpeg_path):
-                print(f"[ERROR] ffmpeg executable not found at: {ffmpeg_path}")
-            else:
-                os.environ['MATPLOTLIB_FFMPEG_PATH'] = ffmpeg_path
-                from matplotlib.animation import FFMpegWriter
-                writer = FFMpegWriter(fps=30)
-                ani.save(video_path, writer=writer)
-                print(f"MP4-Video gespeichert: {video_path}")
-    else:
-        if save_path:
-            gif_path = os.path.join(out_dir, f'{save_path}.gif')
+        video_path = os.path.join(out_dir, f'{save_path}.mp4') if save_path else os.path.join(out_dir, 'phasor_animation.mp4')
+        ffmpeg_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../_nosync_ffmpeg/bin/ffmpeg.exe'))
+        print(f"[DEBUG] ffmpeg_path resolved to: {ffmpeg_path}")
+        if not os.path.isfile(ffmpeg_path):
+            print(f"[ERROR] ffmpeg executable not found at: {ffmpeg_path}")
         else:
-            gif_path = os.path.join(out_dir, 'phasor_animation.gif')
-        ani.save(gif_path, writer='pillow', fps=30)
-        print(f"Animation gespeichert: {gif_path}")
+            os.environ['MATPLOTLIB_FFMPEG_PATH'] = ffmpeg_path
+            from matplotlib.animation import FFMpegWriter
+            writer = FFMpegWriter(fps=30)
+            ani.save(video_path, writer=writer)
+            print(f"MP4-Video gespeichert: {video_path}")
+    # GIF immer erzeugen
+    if save_path:
+        gif_path = os.path.join(out_dir, f'{save_path}.gif')
+    else:
+        gif_path = os.path.join(out_dir, 'phasor_animation.gif')
+    ani.save(gif_path, writer='pillow', fps=30)
+    print(f"Animation gespeichert: {gif_path}")
+    # PNG immer speichern
+    stem = save_path if save_path else 'phasor_animation'
+    out_dir = os.path.join('..', 'bilder', 'plot_phasors')
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir, exist_ok=True)
+    png_path = os.path.join(out_dir, f'{stem}.png')
+    fig.savefig(png_path, dpi=150)
+    print(f"Letztes Frame als PNG gespeichert: {png_path}")
     plt.close(fig)
 
 def main():
