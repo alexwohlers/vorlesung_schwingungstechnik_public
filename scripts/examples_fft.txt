@@ -1,0 +1,399 @@
+
+python generate_measurements.py sinus_1hz --func "sin(2*pi*1*t)" --fs 10000 --duration 5
+python plot_measurements.py sinus_1hz --title "Sinus 1Hz"
+python fft_measurements.py sinus_1hz 
+python plot_fft.py sinus_1hz --fmax 5 --title "FFT: Sinus 1Hz" --no-phase
+python plot_fft_3d.py sinus_1hz --fmax 5
+python generate_report.py sinus_1hz
+
+python generate_measurements.py cosinus_1hz --func "cos(2*pi*1*t)" --fs 10000 --duration 5
+python plot_measurements.py cosinus_1hz --title "Sinus 1Hz"
+python fft_measurements.py cosinus_1hz 
+python plot_fft.py cosinus_1hz --fmax 5 --title "FFT: Sinus 1Hz" --no-phase
+python plot_fft_3d.py cosinus_1hz --fmax 5
+python generate_report.py cosinus_1hz
+
+python generate_measurements.py sinus_50hz --func "sin(2*pi*50*t)" --fs 10000 --duration 2
+python plot_measurements.py sinus_50hz --title "Sinus 50Hz"
+python fft_measurements.py sinus_50hz
+python plot_fft.py sinus_50hz --fmax 100 --title "FFT: Sinus 50Hz"
+python plot_fft_3d.py sinus_50hz --fmax 100 --tmax 0.5
+python generate_report.py sinus_50hz
+
+python generate_measurements.py cosinus_50hz --func "cos(2*pi*50*t)" --fs 10000 --duration 2
+python plot_measurements.py cosinus_50hz --title "Cosinus 50Hz"
+python fft_measurements.py cosinus_50hz
+python plot_fft.py cosinus_50hz --fmax 100 --title "FFT: Cosinus 50Hz"
+python plot_fft_3d.py cosinus_50hz --fmax 100 --tmax 0.5
+python generate_report.py cosinus_50hz
+
+python generate_measurements.py mixed_3_8hz --func "sin(2*pi*3*t) + 0.5*sin(2*pi*8*t)" --fs 10000 --duration 5
+python plot_measurements.py mixed_3_8hz --title "Gemischtes Signal 3Hz + 8Hz"
+python fft_measurements.py mixed_3_8hz 
+python plot_fft.py mixed_3_8hz --fmax 15 --title "FFT: 3Hz + 8Hz"
+python plot_fft_3d.py mixed_3_8hz --fmax 15
+python generate_report.py mixed_3_8hz
+
+python generate_measurements.py triple_freq --func "sin(2*pi*5*t) + 0.7*sin(2*pi*12*t) + 0.4*sin(2*pi*20*t)" --fs 10000 --duration 3
+python plot_measurements.py triple_freq --title "Drei Frequenzen"
+python fft_measurements.py triple_freq 
+python plot_fft.py triple_freq --fmax 30 --title "FFT: 5Hz + 12Hz + 20Hz"
+python plot_fft_3d.py triple_freq --fmax 30
+python generate_report.py triple_freq
+
+python generate_measurements.py noisy_signal --func "sin(2*pi*5*t)" --fs 10000 --duration 5 --noise 0.3
+python plot_measurements.py noisy_signal --title "Signal mit Rauschen"
+python fft_measurements.py noisy_signal
+python plot_fft.py noisy_signal --fmax 20 --title "FFT mit Rauschen"
+python plot_fft_3d.py noisy_signal --fmax 20 --min-magnitude 0.05
+python generate_report.py noisy_signal
+
+python generate_measurements.py low_freq --func "0.5*sin(2*pi*0.2*t) + 0.3*cos(2*pi*1.5*t)" --fs 10000 --duration 30
+python plot_measurements.py low_freq --title "Niederfrequente Signale"
+python fft_measurements.py low_freq
+python plot_fft.py low_freq --fmax 5 --title "FFT: Niederfrequent"
+python plot_fft_3d.py low_freq --fmax 5
+python generate_report.py low_freq
+
+python generate_measurements.py square_approx --func "sin(2*pi*2*t) + (1/3)*sin(2*pi*6*t) + (1/5)*sin(2*pi*10*t) + (1/7)*sin(2*pi*14*t) + (1/9)*sin(2*pi*18*t)" --fs 10000 --duration 3
+python plot_measurements.py square_approx --title "Rechteck-Approximation"
+python fft_measurements.py square_approx
+python plot_fft.py square_approx --fmax 25 --title "FFT: Rechteck-Fourier-Reihe"
+python plot_fft_3d.py square_approx --fmax 25
+python generate_report.py square_approx
+
+python generate_measurements.py am_signal --func "(1 + 0.5*sin(2*pi*2*t)) * sin(2*pi*20*t)" --fs 10000 --duration 3
+python plot_measurements.py am_signal --title "Amplitudenmodulation"
+python fft_measurements.py am_signal
+python plot_fft.py am_signal --fmax 30 --title "FFT: AM-Signal"
+python plot_fft_3d.py am_signal --fmax 30
+python generate_report.py am_signal
+
+python generate_measurements.py chirp --func "sin(2*pi*(1 + 4.5*t)*t)" --fs 10000 --duration 2
+python plot_measurements.py chirp --title "Chirp-Signal (1-10 Hz)"
+python fft_measurements.py chirp
+python plot_fft.py chirp --fmax 15 --title "FFT: Chirp"
+python plot_fft_3d.py chirp --fmax 15
+python generate_report.py chirp
+
+python generate_measurements.py beat --func "sin(2*pi*5*t) + sin(2*pi*5.5*t)" --fs 10000 --duration 10
+python plot_measurements.py beat --title "Schwebung (5Hz + 5.5Hz)"
+python fft_measurements.py beat
+python plot_fft.py beat --fmax 10 --title "FFT: Schwebung"
+python plot_fft_3d.py beat --fmax 10
+python generate_report.py beat
+
+python generate_measurements.py phase_shift --func "sin(2*pi*3*t) + sin(2*pi*3*t + pi/2)" --fs 10000 --duration 5
+python plot_measurements.py phase_shift --title "Phasenverschiebung 90°"
+python fft_measurements.py phase_shift
+python plot_fft.py phase_shift --fmax 10 --title "FFT: Phase"
+python plot_fft_3d.py phase_shift --fmax 10
+python generate_report.py phase_shift
+
+python generate_measurements.py damped --func "exp(-0.3*t) * sin(2*pi*5*t)" --fs 10000 --duration 8
+python plot_measurements.py damped --title "Gedämpfte Schwingung"
+python fft_measurements.py damped
+python plot_fft.py damped --fmax 15 --title "FFT: Gedämpft"
+python plot_fft_3d.py damped --fmax 15
+python generate_report.py damped
+
+python generate_measurements.py sawtooth --func "sin(2*pi*2*t) - (1/2)*sin(2*pi*4*t) + (1/3)*sin(2*pi*6*t) - (1/4)*sin(2*pi*8*t) + (1/5)*sin(2*pi*10*t) - (1/6)*sin(2*pi*12*t) + (1/7)*sin(2*pi*14*t) - (1/8)*sin(2*pi*16*t)" --fs 10000 --duration 3
+python plot_measurements.py sawtooth --title "Sägezahn-Approximation"
+python fft_measurements.py sawtooth
+python plot_fft.py sawtooth --fmax 20 --title "FFT: Sägezahn"
+python plot_fft_3d.py sawtooth --fmax 20
+python generate_report.py sawtooth
+
+python generate_measurements.py twosided_demo --func "sin(2*pi*5*t)" --fs 10000 --duration 5
+python plot_measurements.py twosided_demo --title "Signal für zweiseitiges Spektrum"
+python fft_measurements.py twosided_demo --twosided
+python plot_fft.py twosided_demo --fmax 10 --fmin -10 --title "Zweiseitiges Spektrum"
+python generate_report.py twosided_demo
+
+python generate_measurements.py short_signal --func "sin(2*pi*5*t) + sin(2*pi*6*t)" --fs 100 --duration 0.5
+python plot_measurements.py short_signal --title "Kurzes Signal (0.5s)"
+python fft_measurements.py short_signal
+python plot_fft.py short_signal --fmax 15 --title "FFT: Schlechte Auflösung"
+python plot_fft_3d.py short_signal --fmax 15
+python generate_report.py short_signal
+
+python generate_measurements.py harmonics --func "sin(2*pi*4*t) + 0.5*sin(2*pi*8*t) + 0.3*sin(2*pi*12*t) + 0.2*sin(2*pi*16*t)" --fs 10000 --duration 3
+python plot_measurements.py harmonics --title "Harmonische Reihe"
+python fft_measurements.py harmonics
+python plot_fft.py harmonics --fmax 25 --title "FFT: Harmonische"
+python plot_fft_3d.py harmonics --fmax 25
+python generate_report.py harmonics
+
+python generate_measurements.py high_fs --func "sin(2*pi*10*t)" --fs 10000 --duration 2
+python fft_measurements.py high_fs
+python plot_fft.py high_fs --fmax 50
+python generate_report.py high_fs
+
+python generate_measurements.py low_fs --func "sin(2*pi*10*t)" --fs 10000 --duration 2
+python fft_measurements.py low_fs
+python plot_fft.py low_fs --fmax 15
+python generate_report.py low_fs
+
+python generate_measurements.py complex_pattern --func "sin(2*pi*2*t) + 0.8*sin(2*pi*5*t) + 0.6*sin(2*pi*8*t) + 0.4*sin(2*pi*12*t) + 0.3*sin(2*pi*17*t) + 0.2*sin(2*pi*23*t)" --fs 10000 --duration 5
+python plot_measurements.py complex_pattern --title "Komplexes Mustersignal"
+python fft_measurements.py complex_pattern
+python plot_fft.py complex_pattern --fmax 30 --title "FFT: Komplex"
+python plot_fft_3d.py complex_pattern --fmax 30
+python generate_report.py complex_pattern
+
+python generate_measurements.py interharmonics --func "sin(2*pi*5*t) + 0.5*sin(2*pi*7.3*t) + 0.3*sin(2*pi*11.7*t)" --fs 10000 --duration 10
+python plot_measurements.py interharmonics --title "Interharmonische"
+python fft_measurements.py interharmonics
+python plot_fft.py interharmonics --fmax 20 --title "FFT: Interharmonische"
+python plot_fft_3d.py interharmonics --fmax 20
+python generate_report.py interharmonics
+
+python generate_measurements.py very_noisy --func "sin(2*pi*7*t)" --fs 10000 --duration 10 --noise 1.0
+python plot_measurements.py very_noisy --title "Sehr verrauschtes Signal"
+python fft_measurements.py very_noisy
+python plot_fft.py very_noisy --fmax 20 --title "FFT: Stark verrauscht"
+python plot_fft_3d.py very_noisy --fmax 20 --min-magnitude 0.1
+python generate_report.py very_noisy
+
+python generate_measurements.py cosinus_1hz --func "cos(2*pi*1*t)" --fs 10000 --duration 5
+python plot_measurements.py cosinus_1hz --title "Sinus 1Hz"
+python fft_measurements.py cosinus_1hz 
+python plot_fft.py cosinus_1hz --fmax 5 --title "FFT: Sinus 1Hz" --no-phase
+python plot_fft_3d.py cosinus_1hz --fmax 5
+
+python generate_measurements.py sinus_50hz --func "sin(2*pi*50*t)" --fs 10000 --duration 2
+python plot_measurements.py sinus_50hz --title "Sinus 50Hz"
+python fft_measurements.py sinus_50hz
+python plot_fft.py sinus_50hz --fmax 100 --title "FFT: Sinus 50Hz"
+python plot_fft_3d.py sinus_50hz --fmax 100 --tmax 0.5
+
+python generate_measurements.py mixed_3_8hz --func "sin(2*pi*3*t) + 0.5*sin(2*pi*8*t)" --fs 10000 --duration 5
+python plot_measurements.py mixed_3_8hz --title "Gemischtes Signal 3Hz + 8Hz"
+python fft_measurements.py mixed_3_8hz 
+python plot_fft.py mixed_3_8hz --fmax 15 --title "FFT: 3Hz + 8Hz"
+python plot_fft_3d.py mixed_3_8hz --fmax 15
+
+python generate_measurements.py triple_freq --func "sin(2*pi*5*t) + 0.7*sin(2*pi*12*t) + 0.4*sin(2*pi*20*t)" --fs 10000 --duration 3
+python plot_measurements.py triple_freq --title "Drei Frequenzen"
+python fft_measurements.py triple_freq 
+python plot_fft.py triple_freq --fmax 30 --title "FFT: 5Hz + 12Hz + 20Hz"
+python plot_fft_3d.py triple_freq --fmax 30
+
+python generate_measurements.py noisy_signal --func "sin(2*pi*5*t)" --fs 10000 --duration 5 --noise 0.3
+python plot_measurements.py noisy_signal --title "Signal mit Rauschen"
+python fft_measurements.py noisy_signal
+python plot_fft.py noisy_signal --fmax 20 --title "FFT mit Rauschen"
+python plot_fft_3d.py noisy_signal --fmax 20 --min-magnitude 0.05
+
+python generate_measurements.py low_freq --func "0.5*sin(2*pi*0.2*t) + 0.3*cos(2*pi*1.5*t)" --fs 10000 --duration 30
+python plot_measurements.py low_freq --title "Niederfrequente Signale"
+python fft_measurements.py low_freq
+python plot_fft.py low_freq --fmax 5 --title "FFT: Niederfrequent"
+python plot_fft_3d.py low_freq --fmax 5
+
+python generate_measurements.py square_approx --func "sin(2*pi*2*t) + (1/3)*sin(2*pi*6*t) + (1/5)*sin(2*pi*10*t) + (1/7)*sin(2*pi*14*t) + (1/9)*sin(2*pi*18*t)" --fs 10000 --duration 3
+python plot_measurements.py square_approx --title "Rechteck-Approximation"
+python fft_measurements.py square_approx
+python plot_fft.py square_approx --fmax 25 --title "FFT: Rechteck-Fourier-Reihe"
+python plot_fft_3d.py square_approx --fmax 25
+
+python generate_measurements.py am_signal --func "(1 + 0.5*sin(2*pi*2*t)) * sin(2*pi*20*t)" --fs 10000 --duration 3
+python plot_measurements.py am_signal --title "Amplitudenmodulation"
+python fft_measurements.py am_signal
+python plot_fft.py am_signal --fmax 30 --title "FFT: AM-Signal"
+python plot_fft_3d.py am_signal --fmax 30
+
+python generate_measurements.py chirp --func "sin(2*pi*(1 + 4.5*t)*t)" --fs 10000 --duration 2
+python plot_measurements.py chirp --title "Chirp-Signal (1-10 Hz)"
+python fft_measurements.py chirp
+python plot_fft.py chirp --fmax 15 --title "FFT: Chirp"
+python plot_fft_3d.py chirp --fmax 15
+
+python generate_measurements.py beat --func "sin(2*pi*5*t) + sin(2*pi*5.5*t)" --fs 10000 --duration 10
+python plot_measurements.py beat --title "Schwebung (5Hz + 5.5Hz)"
+python fft_measurements.py beat
+python plot_fft.py beat --fmax 10 --title "FFT: Schwebung"
+python plot_fft_3d.py beat --fmax 10
+
+python generate_measurements.py phase_shift --func "sin(2*pi*3*t) + sin(2*pi*3*t + pi/2)" --fs 10000 --duration 5
+python plot_measurements.py phase_shift --title "Phasenverschiebung 90°"
+python fft_measurements.py phase_shift
+python plot_fft.py phase_shift --fmax 10 --title "FFT: Phase"
+python plot_fft_3d.py phase_shift --fmax 10
+
+python generate_measurements.py damped --func "exp(-0.3*t) * sin(2*pi*5*t)" --fs 10000 --duration 8
+python plot_measurements.py damped --title "Gedämpfte Schwingung"
+python fft_measurements.py damped
+python plot_fft.py damped --fmax 15 --title "FFT: Gedämpft"
+python plot_fft_3d.py damped --fmax 15
+
+python generate_measurements.py sawtooth --func "sin(2*pi*2*t) - (1/2)*sin(2*pi*4*t) + (1/3)*sin(2*pi*6*t) - (1/4)*sin(2*pi*8*t) + (1/5)*sin(2*pi*10*t) - (1/6)*sin(2*pi*12*t) + (1/7)*sin(2*pi*14*t) - (1/8)*sin(2*pi*16*t)" --fs 10000 --duration 3
+python plot_measurements.py sawtooth --title "Sägezahn-Approximation"
+python fft_measurements.py sawtooth
+python plot_fft.py sawtooth --fmax 20 --title "FFT: Sägezahn"
+python plot_fft_3d.py sawtooth --fmax 20
+
+python generate_measurements.py twosided_demo --func "sin(2*pi*5*t)" --fs 10000 --duration 5
+python plot_measurements.py twosided_demo --title "Signal für zweiseitiges Spektrum"
+python fft_measurements.py twosided_demo --twosided
+python plot_fft.py twosided_demo --fmax 10 --fmin -10 --title "Zweiseitiges Spektrum"
+
+python generate_measurements.py short_signal --func "sin(2*pi*5*t) + sin(2*pi*6*t)" --fs 100 --duration 0.5
+python plot_measurements.py short_signal --title "Kurzes Signal (0.5s)"
+python fft_measurements.py short_signal
+python plot_fft.py short_signal --fmax 15 --title "FFT: Schlechte Auflösung"
+python plot_fft_3d.py short_signal --fmax 15
+
+python generate_measurements.py harmonics --func "sin(2*pi*4*t) + 0.5*sin(2*pi*8*t) + 0.3*sin(2*pi*12*t) + 0.2*sin(2*pi*16*t)" --fs 10000 --duration 3
+python plot_measurements.py harmonics --title "Harmonische Reihe"
+python fft_measurements.py harmonics
+python plot_fft.py harmonics --fmax 25 --title "FFT: Harmonische"
+python plot_fft_3d.py harmonics --fmax 25
+
+python generate_measurements.py high_fs --func "sin(2*pi*10*t)" --fs 10000 --duration 2
+python fft_measurements.py high_fs
+python plot_fft.py high_fs --fmax 50
+python generate_measurements.py low_fs --func "sin(2*pi*10*t)" --fs 10000 --duration 2
+python fft_measurements.py low_fs
+python plot_fft.py low_fs --fmax 15
+
+python generate_measurements.py complex_pattern --func "sin(2*pi*2*t) + 0.8*sin(2*pi*5*t) + 0.6*sin(2*pi*8*t) + 0.4*sin(2*pi*12*t) + 0.3*sin(2*pi*17*t) + 0.2*sin(2*pi*23*t)" --fs 10000 --duration 5
+python plot_measurements.py complex_pattern --title "Komplexes Mustersignal"
+python fft_measurements.py complex_pattern
+python plot_fft.py complex_pattern --fmax 30 --title "FFT: Komplex"
+python plot_fft_3d.py complex_pattern --fmax 30
+
+python generate_measurements.py interharmonics --func "sin(2*pi*5*t) + 0.5*sin(2*pi*7.3*t) + 0.3*sin(2*pi*11.7*t)" --fs 10000 --duration 10
+python plot_measurements.py interharmonics --title "Interharmonische"
+python fft_measurements.py interharmonics
+python plot_fft.py interharmonics --fmax 20 --title "FFT: Interharmonische"
+python plot_fft_3d.py interharmonics --fmax 20
+
+python generate_measurements.py very_noisy --func "sin(2*pi*7*t)" --fs 10000 --duration 10 --noise 1.0
+python plot_measurements.py very_noisy --title "Sehr verrauschtes Signal"
+python fft_measurements.py very_noisy
+python plot_fft.py very_noisy --fmax 20 --title "FFT: Stark verrauscht"
+python plot_fft_3d.py very_noisy --fmax 20 --min-magnitude 0.1
+python generate_report.py very_noisy
+
+python generate_measurements.py cosinus_1hz --func "cos(2*pi*1*t)" --fs 10000 --duration 5
+python plot_measurements.py cosinus_1hz --title "Sinus 1Hz"
+python fft_measurements.py cosinus_1hz 
+python plot_fft.py cosinus_1hz --fmax 5 --title "FFT: Sinus 1Hz" --no-phase
+python plot_fft_3d.py cosinus_1hz --fmax 5
+
+python generate_measurements.py sinus_50hz --func "sin(2*pi*50*t)" --fs 10000 --duration 2
+python plot_measurements.py sinus_50hz --title "Sinus 50Hz"
+python fft_measurements.py sinus_50hz
+python plot_fft.py sinus_50hz --fmax 100 --title "FFT: Sinus 50Hz"
+python plot_fft_3d.py sinus_50hz --fmax 100 --tmax 0.5
+
+python generate_measurements.py mixed_3_8hz --func "sin(2*pi*3*t) + 0.5*sin(2*pi*8*t)" --fs 10000 --duration 5
+python plot_measurements.py mixed_3_8hz --title "Gemischtes Signal 3Hz + 8Hz"
+python fft_measurements.py mixed_3_8hz 
+python plot_fft.py mixed_3_8hz --fmax 15 --title "FFT: 3Hz + 8Hz"
+python plot_fft_3d.py mixed_3_8hz --fmax 15
+
+python generate_measurements.py triple_freq --func "sin(2*pi*5*t) + 0.7*sin(2*pi*12*t) + 0.4*sin(2*pi*20*t)" --fs 10000 --duration 3
+python plot_measurements.py triple_freq --title "Drei Frequenzen"
+python fft_measurements.py triple_freq 
+python plot_fft.py triple_freq --fmax 30 --title "FFT: 5Hz + 12Hz + 20Hz"
+python plot_fft_3d.py triple_freq --fmax 30
+
+python generate_measurements.py noisy_signal --func "sin(2*pi*5*t)" --fs 10000 --duration 5 --noise 0.3
+python plot_measurements.py noisy_signal --title "Signal mit Rauschen"
+python fft_measurements.py noisy_signal
+python plot_fft.py noisy_signal --fmax 20 --title "FFT mit Rauschen"
+python plot_fft_3d.py noisy_signal --fmax 20 --min-magnitude 0.05
+
+python generate_measurements.py low_freq --func "0.5*sin(2*pi*0.2*t) + 0.3*cos(2*pi*1.5*t)" --fs 10000 --duration 30
+python plot_measurements.py low_freq --title "Niederfrequente Signale"
+python fft_measurements.py low_freq
+python plot_fft.py low_freq --fmax 5 --title "FFT: Niederfrequent"
+python plot_fft_3d.py low_freq --fmax 5
+
+python generate_measurements.py square_approx --func "sin(2*pi*2*t) + (1/3)*sin(2*pi*6*t) + (1/5)*sin(2*pi*10*t) + (1/7)*sin(2*pi*14*t) + (1/9)*sin(2*pi*18*t)" --fs 10000 --duration 3
+python plot_measurements.py square_approx --title "Rechteck-Approximation"
+python fft_measurements.py square_approx
+python plot_fft.py square_approx --fmax 25 --title "FFT: Rechteck-Fourier-Reihe"
+python plot_fft_3d.py square_approx --fmax 25
+
+python generate_measurements.py am_signal --func "(1 + 0.5*sin(2*pi*2*t)) * sin(2*pi*20*t)" --fs 10000 --duration 3
+python plot_measurements.py am_signal --title "Amplitudenmodulation"
+python fft_measurements.py am_signal
+python plot_fft.py am_signal --fmax 30 --title "FFT: AM-Signal"
+python plot_fft_3d.py am_signal --fmax 30
+
+python generate_measurements.py chirp --func "sin(2*pi*(1 + 4.5*t)*t)" --fs 10000 --duration 2
+python plot_measurements.py chirp --title "Chirp-Signal (1-10 Hz)"
+python fft_measurements.py chirp
+python plot_fft.py chirp --fmax 15 --title "FFT: Chirp"
+python plot_fft_3d.py chirp --fmax 15
+
+python generate_measurements.py beat --func "sin(2*pi*5*t) + sin(2*pi*5.5*t)" --fs 10000 --duration 10
+python plot_measurements.py beat --title "Schwebung (5Hz + 5.5Hz)"
+python fft_measurements.py beat
+python plot_fft.py beat --fmax 10 --title "FFT: Schwebung"
+python plot_fft_3d.py beat --fmax 10
+
+python generate_measurements.py phase_shift --func "sin(2*pi*3*t) + sin(2*pi*3*t + pi/2)" --fs 10000 --duration 5
+python plot_measurements.py phase_shift --title "Phasenverschiebung 90°"
+python fft_measurements.py phase_shift
+python plot_fft.py phase_shift --fmax 10 --title "FFT: Phase"
+python plot_fft_3d.py phase_shift --fmax 10
+
+python generate_measurements.py damped --func "exp(-0.3*t) * sin(2*pi*5*t)" --fs 10000 --duration 8
+python plot_measurements.py damped --title "Gedämpfte Schwingung"
+python fft_measurements.py damped
+python plot_fft.py damped --fmax 15 --title "FFT: Gedämpft"
+python plot_fft_3d.py damped --fmax 15
+
+python generate_measurements.py sawtooth --func "sin(2*pi*2*t) - (1/2)*sin(2*pi*4*t) + (1/3)*sin(2*pi*6*t) - (1/4)*sin(2*pi*8*t) + (1/5)*sin(2*pi*10*t) - (1/6)*sin(2*pi*12*t) + (1/7)*sin(2*pi*14*t) - (1/8)*sin(2*pi*16*t)" --fs 10000 --duration 3
+python plot_measurements.py sawtooth --title "Sägezahn-Approximation"
+python fft_measurements.py sawtooth
+python plot_fft.py sawtooth --fmax 20 --title "FFT: Sägezahn"
+python plot_fft_3d.py sawtooth --fmax 20
+
+python generate_measurements.py twosided_demo --func "sin(2*pi*5*t)" --fs 10000 --duration 5
+python plot_measurements.py twosided_demo --title "Signal für zweiseitiges Spektrum"
+python fft_measurements.py twosided_demo --twosided
+python plot_fft.py twosided_demo --fmax 10 --fmin -10 --title "Zweiseitiges Spektrum"
+
+python generate_measurements.py short_signal --func "sin(2*pi*5*t) + sin(2*pi*6*t)" --fs 100 --duration 0.5
+python plot_measurements.py short_signal --title "Kurzes Signal (0.5s)"
+python fft_measurements.py short_signal
+python plot_fft.py short_signal --fmax 15 --title "FFT: Schlechte Auflösung"
+python plot_fft_3d.py short_signal --fmax 15
+
+python generate_measurements.py harmonics --func "sin(2*pi*4*t) + 0.5*sin(2*pi*8*t) + 0.3*sin(2*pi*12*t) + 0.2*sin(2*pi*16*t)" --fs 10000 --duration 3
+python plot_measurements.py harmonics --title "Harmonische Reihe"
+python fft_measurements.py harmonics
+python plot_fft.py harmonics --fmax 25 --title "FFT: Harmonische"
+python plot_fft_3d.py harmonics --fmax 25
+
+python generate_measurements.py high_fs --func "sin(2*pi*10*t)" --fs 10000 --duration 2
+python fft_measurements.py high_fs
+python plot_fft.py high_fs --fmax 50
+python generate_measurements.py low_fs --func "sin(2*pi*10*t)" --fs 10000 --duration 2
+python fft_measurements.py low_fs
+python plot_fft.py low_fs --fmax 15
+
+python generate_measurements.py complex_pattern --func "sin(2*pi*2*t) + 0.8*sin(2*pi*5*t) + 0.6*sin(2*pi*8*t) + 0.4*sin(2*pi*12*t) + 0.3*sin(2*pi*17*t) + 0.2*sin(2*pi*23*t)" --fs 10000 --duration 5
+python plot_measurements.py complex_pattern --title "Komplexes Mustersignal"
+python fft_measurements.py complex_pattern
+python plot_fft.py complex_pattern --fmax 30 --title "FFT: Komplex"
+python plot_fft_3d.py complex_pattern --fmax 30
+
+python generate_measurements.py interharmonics --func "sin(2*pi*5*t) + 0.5*sin(2*pi*7.3*t) + 0.3*sin(2*pi*11.7*t)" --fs 10000 --duration 10
+python plot_measurements.py interharmonics --title "Interharmonische"
+python fft_measurements.py interharmonics
+python plot_fft.py interharmonics --fmax 20 --title "FFT: Interharmonische"
+python plot_fft_3d.py interharmonics --fmax 20
+
+python generate_measurements.py very_noisy --func "sin(2*pi*7*t)" --fs 10000 --duration 10 --noise 1.0
+python plot_measurements.py very_noisy --title "Sehr verrauschtes Signal"
+python fft_measurements.py very_noisy
+python plot_fft.py very_noisy --fmax 20 --title "FFT: Stark verrauscht"
+python plot_fft_3d.py very_noisy --fmax 20 --min-magnitude 0.1
+python generate_report.py very_noisy
+

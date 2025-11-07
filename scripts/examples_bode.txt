@@ -1,0 +1,9 @@
+python generate_measurements.py bode_demo --func "sin(2*pi*5*t)" --func "0.8*sin(2*pi*5*t + pi/4)" --fs 10000 --duration 10
+python plot_measurements.py bode_demo --title "Bode-Demo"
+python generate_bode.py bode_demo --window hann
+python plot_bode.py bode_demo
+
+python generate_measurements.py bode_wide --func "sin(2*pi*(2 + 48*t)*t)" --func "0.5*sin(2*pi*(2 + 48*t)*t)" --fs 1000 --duration 5
+python plot_measurements.py bode_wide --title "Chirp: Eingang & Ausgang"
+python generate_bode.py bode_wide --window hann
+python plot_bode.py bode_wide --title "Bode-Diagramm: 2-50 Hz Chirp" --fmin 1 --fmax 60

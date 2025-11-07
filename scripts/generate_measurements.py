@@ -167,7 +167,7 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument("name", nargs="?", default="data", help="Dateiname (ohne Endung, wird automatisch in measurements/ gespeichert)")
-    p.add_argument("--func", required=False, default="sin(2*pi*1*t)", help="Funktionsausdruck in t (und optional n)")
+    p.add_argument("--func", action="append", required=False, help="Funktionsausdruck in t (und optional n). Mehrfach verwendbar für mehrere Kanäle.")
     p.add_argument("--fs", type=float, default=100.0, help="Abtastrate in Hz")
     p.add_argument("--duration", type=float, help="Dauer in Sekunden (alternativ --samples)")
     p.add_argument("--samples", type=int, help="Anzahl Samples (überschreibt --duration)")
@@ -192,19 +192,20 @@ def main() -> None:
     args = parse_args()
     
     # Ausgabepfad bestimmen
+    import os
     if args.out:
         # Explizit angegebener Pfad
         out_path = args.out
     else:
         # Automatisch aus Name erstellen
-        import os
         # Sicherstellen dass .csv Endung hinzugefügt wird
         filename = args.name if args.name.endswith(".csv") else f"{args.name}.csv"
-    out_path = os.path.join("..", "data", "measurements", filename)
+        out_path = os.path.join("..", "data", "measurements", filename)
 
     try:
-        generate_csv(
-            expr=args.func,
+        func_list = args.func if args.func else ["sin(2*pi*1*t)"]
+        generate_csv_multi(
+            expr_list=func_list,
             fs=args.fs,
             duration=args.duration,
             samples=args.samples,
@@ -223,10 +224,90 @@ def main() -> None:
         raise SystemExit(1)
 
     print(
-        f"Fertig. Datei '{out_path}' geschrieben. Ausdruck='{args.func}', fs={args.fs}, "
+        f"Fertig. Datei '{out_path}' geschrieben. Ausdrücke={func_list}, fs={args.fs}, "
         f"samples={args.samples if args.samples is not None else ('~'+str(int(round((args.duration or 0)*args.fs))))}, "
         f"timestamp={args.timestamp}"
     )
+
+
+def generate_csv_multi(
+        expr_list: list[str],
+        fs: float,
+        duration: Optional[float],
+        samples: Optional[int],
+        out_path: str,
+        amplitude: float = 1.0,
+        offset: float = 0.0,
+        noise_std: float = 0.0,
+        seed: Optional[int] = None,
+        timestamp_mode: str = "relative",
+        delimiter: str = ",",
+        header: bool = True,
+        encoding: str = "utf-8",
+    ) -> None:
+        if fs <= 0:
+            raise ValueError("Abtastrate fs muss > 0 sein.")
+        import os
+        out_dir = os.path.dirname(out_path)
+        if out_dir and not os.path.exists(out_dir):
+            os.makedirs(out_dir, exist_ok=True)
+
+        if samples is None:
+            if duration is None:
+                raise ValueError("Entweder --duration oder --samples angeben.")
+            if duration < 0:
+                raise ValueError("duration muss >= 0 sein.")
+            samples = int(round(duration * fs))
+        else:
+            if samples < 0:
+                raise ValueError("samples muss >= 0 sein.")
+
+        if seed is not None:
+            random.seed(seed)
+
+        base_time = datetime.now(timezone.utc)
+
+        # CSV schreiben
+        with open(out_path, "w", newline="", encoding=encoding) as f:
+            writer = csv.writer(f, delimiter=delimiter)
+
+            # Kopfzeile
+            if header:
+                header_row = ["index"]
+                if timestamp_mode == "relative":
+                    header_row.append("t")
+                elif timestamp_mode == "iso":
+                    header_row.append("timestamp_iso")
+                elif timestamp_mode == "epoch":
+                    header_row.append("timestamp_epoch")
+                # Kanäle
+                for i in range(len(expr_list)):
+                    header_row.append(f"value_{i+1}")
+                writer.writerow(header_row)
+
+            # Datenzeilen
+            for n in range(samples):
+                t = n / fs
+                values = []
+                for expr in expr_list:
+                    y = _evaluate_func(expr, t, n)
+                    y = offset + amplitude * y
+                    if noise_std > 0:
+                        y += random.gauss(0.0, noise_std)
+                    values.append(y)
+
+                row = [n]
+                if timestamp_mode == "relative":
+                    row.append(t)
+                elif timestamp_mode == "iso":
+                    ts = (base_time).astimezone(timezone.utc)
+                    ts = ts.timestamp() + t
+                    ts_iso = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
+                    row.append(ts_iso)
+                elif timestamp_mode == "epoch":
+                    row.append(base_time.timestamp() + t)
+                row.extend(values)
+                writer.writerow(row)
 
 
 if __name__ == "__main__":

@@ -56,6 +56,7 @@ def phasor_plot(freqs, amps, phases, duration=1.0, fs=1000, save_path=None, titl
     time_line, = ax_time.plot([], [], 'b-', linewidth=1.5)
     time_point, = ax_time.plot([], [], 'ro', markersize=8)
     # Animationsfunktion
+    frame_counter = [1]  # mutable counter for closure
     def animate(i):
         # Phasor-Plot
         for arr in arrow_objs:
@@ -77,6 +78,8 @@ def phasor_plot(freqs, amps, phases, duration=1.0, fs=1000, save_path=None, titl
         # Zeitbereichs-Plot
         time_line.set_data(t[:i+1], signal.real[:i+1])
         time_point.set_data([t[i]], [signal.real[i]])
+
+        # PNG-Frame Speicherung entfernt
         return arrow_objs + circle_objs + [sum_line, time_line, time_point]
     # Weniger Frames, aber Animation bis zur vollen Dauer
     n_frames = 400  # z.B. 400 Frames für das ganze GIF

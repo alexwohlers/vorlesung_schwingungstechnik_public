@@ -38,7 +38,7 @@ except ImportError:
 def detect_csv_format(file_path: str, delimiter: str = ",") -> str:
     """
     Erkennt das CSV-Format anhand der Spaltenüberschriften.
-    Rückgabe: 'relative', 'iso', 'epoch', 'none'
+    Rückgabe: 'relative', 'iso', 'epoch', 'none', 'multi'
     """
     with open(file_path, "r", encoding="utf-8") as f:
         reader = csv.reader(f, delimiter=delimiter)
@@ -48,6 +48,11 @@ def detect_csv_format(file_path: str, delimiter: str = ",") -> str:
             return "none"  # Keine Kopfzeile
         
         header_lower = [col.lower() for col in header]
+        
+        # Prüfe auf mehrere Kanäle (value_1, value_2, ...)
+        value_cols = [col for col in header_lower if col.startswith("value_")]
+        if len(value_cols) > 1:
+            return "multi"
         
         if "timestamp_iso" in header_lower:
             return "iso"
@@ -65,17 +70,19 @@ def detect_csv_format(file_path: str, delimiter: str = ",") -> str:
                 return "none"
 
 
-def read_csv_data(file_path: str, delimiter: str = ",") -> Tuple[List[float], List[float], str]:
+def read_csv_data(file_path: str, delimiter: str = ",") -> Tuple[List[float], List[List[float]], str, List[str]]:
     """
-    Liest CSV-Daten und gibt (x_values, y_values, format) zurück.
+    Liest CSV-Daten und gibt (x_values, y_values_list, format, channel_names) zurück.
     x_values: Zeit oder Index
-    y_values: Messwerte
-    format: 'relative', 'iso', 'epoch', 'none'
+    y_values_list: Liste von Listen mit Messwerten (ein Eintrag pro Kanal)
+    format: 'relative', 'iso', 'epoch', 'none', 'multi'
+    channel_names: Liste mit Namen der Kanäle
     """
     csv_format = detect_csv_format(file_path, delimiter)
     
     x_values = []
-    y_values = []
+    y_values_list = []  # Liste von Listen für mehrere Kanäle
+    channel_names = []
     
     with open(file_path, "r", encoding="utf-8") as f:
         reader = csv.reader(f, delimiter=delimiter)
@@ -88,27 +95,71 @@ def read_csv_data(file_path: str, delimiter: str = ",") -> Tuple[List[float], Li
             if header is not None and "index" in [h.lower() for h in header]:
                 next(reader)  # Header überspringen
             
+            # Ein Kanal
+            y_values_list.append([])
+            channel_names.append("value")
+            
             for idx, row in enumerate(reader):
                 try:
                     if len(row) >= 2:
                         x_values.append(float(row[0]))  # index
-                        y_values.append(float(row[-1]))  # letzter Wert ist value
+                        y_values_list[0].append(float(row[-1]))  # letzter Wert ist value
                     elif len(row) == 1:
                         x_values.append(idx)
-                        y_values.append(float(row[0]))
+                        y_values_list[0].append(float(row[0]))
+                except (ValueError, IndexError):
+                    continue
+        
+        elif csv_format == "multi":
+            # Mehrere Kanäle (value_1, value_2, ...)
+            header_lower = [col.lower() for col in header]
+            
+            # Finde Zeit-Spalte und Wert-Spalten
+            time_idx = None
+            value_indices = []
+            
+            for idx, col in enumerate(header_lower):
+                if col == "t":
+                    time_idx = idx
+                elif col.startswith("value_"):
+                    value_indices.append(idx)
+                    channel_names.append(header[idx])  # Original-Name
+            
+            # Initialisiere Listen für jeden Kanal
+            for _ in value_indices:
+                y_values_list.append([])
+            
+            # Daten lesen
+            for row in reader:
+                try:
+                    if time_idx is not None:
+                        x_values.append(float(row[time_idx]))
+                    else:
+                        x_values.append(len(x_values))
+                    
+                    for i, val_idx in enumerate(value_indices):
+                        y_values_list[i].append(float(row[val_idx]))
                 except (ValueError, IndexError):
                     continue
         
         elif csv_format == "relative":
+            # Ein Kanal mit relativer Zeit
+            y_values_list.append([])
+            channel_names.append("value")
+            
             for row in reader:
                 try:
                     if len(row) >= 3:
                         x_values.append(float(row[1]))  # t (Zeit in Sekunden)
-                        y_values.append(float(row[2]))  # value
+                        y_values_list[0].append(float(row[2]))  # value
                 except (ValueError, IndexError):
                     continue
         
         elif csv_format == "iso":
+            # Ein Kanal mit ISO-Zeitstempel
+            y_values_list.append([])
+            channel_names.append("value")
+            
             for row in reader:
                 try:
                     if len(row) >= 3:
@@ -116,11 +167,15 @@ def read_csv_data(file_path: str, delimiter: str = ",") -> Tuple[List[float], Li
                         ts_str = row[1]
                         dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
                         x_values.append(dt)
-                        y_values.append(float(row[2]))
+                        y_values_list[0].append(float(row[2]))
                 except (ValueError, IndexError):
                     continue
         
         elif csv_format == "epoch":
+            # Ein Kanal mit Epoch-Zeitstempel
+            y_values_list.append([])
+            channel_names.append("value")
+            
             for row in reader:
                 try:
                     if len(row) >= 3:
@@ -128,11 +183,11 @@ def read_csv_data(file_path: str, delimiter: str = ",") -> Tuple[List[float], Li
                         epoch = float(row[1])
                         dt = datetime.fromtimestamp(epoch)
                         x_values.append(dt)
-                        y_values.append(float(row[2]))
+                        y_values_list[0].append(float(row[2]))
                 except (ValueError, IndexError):
                     continue
     
-    return x_values, y_values, csv_format
+    return x_values, y_values_list, csv_format, channel_names
 
 
 def plot_data(
@@ -153,6 +208,8 @@ def plot_data(
     fig, ax = plt.subplots(figsize=figsize)
     
     has_datetime = False
+    color_cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
+    color_idx = 0
     
     for file_path in files:
         if not os.path.exists(file_path):
@@ -160,33 +217,49 @@ def plot_data(
             continue
         
         try:
-            x_values, y_values, csv_format = read_csv_data(file_path, delimiter)
+            x_values, y_values_list, csv_format, channel_names = read_csv_data(file_path, delimiter)
             
             if len(x_values) == 0:
                 print(f"Warnung: Keine Daten in '{file_path}' gefunden.")
                 continue
             
-            # Label aus Dateiname erstellen
-            label = Path(file_path).stem
+            # Dateiname als Basis-Label
+            file_label = Path(file_path).stem
             
-            # Plot-Optionen
-            plot_kwargs = {
-                "label": label,
-                "linestyle": linestyle,
-            }
-            if marker:
-                plot_kwargs["marker"] = marker
-                plot_kwargs["markersize"] = 4
-            
-            # Prüfen ob datetime-Objekte
-            if csv_format in ("iso", "epoch"):
-                has_datetime = True
+            # Jeden Kanal plotten
+            for i, (y_values, channel_name) in enumerate(zip(y_values_list, channel_names)):
+                # Label erstellen
+                if len(y_values_list) > 1:
+                    # Mehrere Kanäle: zeige Kanal-Name
+                    if len(files) > 1:
+                        label = f"{file_label} - {channel_name}"
+                    else:
+                        label = channel_name
+                else:
+                    # Ein Kanal: nur Dateiname
+                    label = file_label
+                
+                # Plot-Optionen
+                plot_kwargs = {
+                    "label": label,
+                    "linestyle": linestyle,
+                    "color": color_cycle[color_idx % len(color_cycle)],
+                }
+                if marker:
+                    plot_kwargs["marker"] = marker
+                    plot_kwargs["markersize"] = 4
+                
+                # Prüfen ob datetime-Objekte
+                if csv_format in ("iso", "epoch"):
+                    has_datetime = True
+                
                 ax.plot(x_values, y_values, **plot_kwargs)
-            else:
-                ax.plot(x_values, y_values, **plot_kwargs)
+                color_idx += 1
         
         except Exception as e:
             print(f"Fehler beim Lesen von '{file_path}': {e}")
+            import traceback
+            traceback.print_exc()
             continue
     
     # Achsenbeschriftungen
@@ -217,8 +290,10 @@ def plot_data(
     if grid:
         ax.grid(True, alpha=0.3, linestyle="--")
     
-    # Legende wenn mehrere Dateien
-    if len(files) > 1:
+    # Legende wenn mehrere Dateien oder mehrere Kanäle
+    # Prüfe ob es überhaupt mehrere Linien gibt
+    lines = ax.get_lines()
+    if len(lines) > 1:
         ax.legend(loc="best", framealpha=0.9)
     
     # Datetime-Formatierung für X-Achse
