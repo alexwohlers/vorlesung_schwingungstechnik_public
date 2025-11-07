@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+import os
+# ffmpeg-Pfad für Matplotlib setzen (Windows, raw string) - MUSS vor Matplotlib-Import stehen
+FFMPEG_PATH = os.path.normpath(r'C:\github\_nosync_ffmpeg\bin\ffmpeg.exe')
+os.environ['MATPLOTLIB_FFMPEG_PATH'] = FFMPEG_PATH
 """
 Phasor-Plot: Visualisiert die komplexe Addition von Sinus-Komponenten als Zeigerdiagramm.
 
 Beispielaufruf:
-  python plot_phasors.py --freqs 5 12 20 --amps 1 0.7 0.4 --phases 0 0 0 --duration 1 --fs 1000 --save phasor_demo.png
+    python plot_phasors.py --freqs 5 12 20 --amps 1 0.7 0.4 --phases 0 0 0 --duration 1 --fs 1000 --save phasor_demo.png
 
 Erzeugt ein Diagramm wie im Anhang: Zeiger (blau), Summenkurve (rot), Kreise (blassblau).
 """
@@ -11,7 +15,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from matplotlib import animation
-import os
 
 def phasor_plot(freqs, amps, phases, duration=1.0, fs=1000, save_path=None, title=None, as_video=False):
     t = np.linspace(0, duration, int(fs*duration))
@@ -78,27 +81,60 @@ def phasor_plot(freqs, amps, phases, duration=1.0, fs=1000, save_path=None, titl
     # Weniger Frames, aber Animation bis zur vollen Dauer
     n_frames = 400  # z.B. 400 Frames für das ganze GIF
     frame_indices = np.linspace(0, len(t)-1, n_frames, dtype=int)
-    ani = animation.FuncAnimation(fig, animate, frames=frame_indices, interval=30, blit=False)
+    
+    # Animation-Objekt nur für GIF erstellen (für Video rendern wir manuell)
+    if not as_video:
+        ani = animation.FuncAnimation(fig, animate, frames=frame_indices, interval=30, blit=False)
+    
     # Titel setzen, falls vorhanden
     if title:
         fig.suptitle(title, fontsize=18)
     # Dateiname setzen
     # Zielverzeichnis sicherstellen
-    out_dir = os.path.join('..', 'bilder', 'plot_phasors')
+    # Absoluter Pfad für Ausgabeverzeichnis
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    out_dir = os.path.abspath(os.path.join(script_dir, '..', 'bilder', 'plot_phasors'))
     if not os.path.exists(out_dir):
         os.makedirs(out_dir, exist_ok=True)
     if as_video:
+            import subprocess
+            import tempfile
+            import shutil
+            
             video_path = os.path.join(out_dir, f'{save_path}.mp4') if save_path else os.path.join(out_dir, 'phasor_animation.mp4')
-            ffmpeg_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../_nosync_ffmpeg/bin/ffmpeg.exe'))
-            print(f"[DEBUG] ffmpeg_path resolved to: {ffmpeg_path}")
-            if not os.path.isfile(ffmpeg_path):
-                print(f"[ERROR] ffmpeg executable not found at: {ffmpeg_path}")
-            else:
-                os.environ['MATPLOTLIB_FFMPEG_PATH'] = ffmpeg_path
-                from matplotlib.animation import FFMpegWriter
-                writer = FFMpegWriter(fps=30)
-                ani.save(video_path, writer=writer)
-                print(f"MP4-Video gespeichert: {video_path}")
+            print(f"[DEBUG] Video-Pfad: {video_path}")
+            
+            # Temporäres Verzeichnis für Frames erstellen
+            temp_dir = tempfile.mkdtemp()
+            try:
+                # Frames als PNG speichern
+                print("Speichere Frames...")
+                for i, frame_idx in enumerate(frame_indices):
+                    animate(frame_idx)
+                    frame_path = os.path.join(temp_dir, f'frame_{i:04d}.png')
+                    fig.savefig(frame_path, dpi=100)
+                
+                # ffmpeg direkt aufrufen, um Video zu erstellen
+                print("Erstelle Video mit ffmpeg...")
+                cmd = [
+                    FFMPEG_PATH,
+                    '-y',  # Überschreiben ohne Nachfrage
+                    '-framerate', '30',
+                    '-i', os.path.join(temp_dir, 'frame_%04d.png'),
+                    '-c:v', 'libx264',
+                    '-pix_fmt', 'yuv420p',
+                    video_path
+                ]
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                if result.returncode == 0:
+                    print(f"MP4-Video gespeichert: {video_path}")
+                else:
+                    print(f"[ERROR] ffmpeg failed: {result.stderr}")
+            except Exception as e:
+                print(f"[ERROR] Video export failed: {e}")
+            finally:
+                # Temporäres Verzeichnis aufräumen
+                shutil.rmtree(temp_dir, ignore_errors=True)
     else:
         if save_path:
             gif_path = os.path.join(out_dir, f'{save_path}.gif')
