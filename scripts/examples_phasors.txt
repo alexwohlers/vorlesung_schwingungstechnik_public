@@ -10,11 +10,12 @@ python plot_phasors.py --freqs 4 8 12 --amps 1 0.5 0.3 --phases 0 0 0 --duration
 
 python plot_phasors.py --freqs 5 5.5 --amps 1 1 --phases 0 0 --duration 4 --fs 1000 --save schwebung --title "Schwebung" --video
 
-python plot_phasors.py --freqs 3 3 --amps 1 0.7 --phases 0 1.5708 --duration 2 --fs 1000 --save phasenverschiebung --title "Phasenverschiebung" --video
+python plot_phasors.py --freqs 3 3 --amps 1 0.7 --phases 0 90 --duration 2 --fs 1000 --save phasenverschiebung --title "Phasenverschiebung" --video
 
-python plot_phasors.py --freqs 2 6 10 14 18 --amps 1.273 0.424 0.255 0.182 0.141 --phases 1.5708 1.5708 1.5708 1.5708 1.5708 --duration 2 --fs 1000 --save rechteck_approximation --title "Rechteck-Approximation" --video
+python plot_phasors.py --freqs 2 6 10 14 18 --amps 1.273 0.424 0.255 0.182 0.141 --phases 90 90 90 90 90 --duration 2 --fs 1000 --save rechteck_approximation --title "Rechteck-Approximation" --video
 
 python plot_phasors.py --freqs 18 20 22 --amps 0.25 1 0.25 --phases 0 0 0 --duration 2 --fs 1000 --save amplitudenmodulation --title "Amplitudenmodulation" --video
 
 python plot_phasors.py --freqs 2 5 8 12 17 23 --amps 1 0.8 0.6 0.4 0.3 0.2 --phases 0 0 0 0 0 0 --duration 3 --fs 1000 --save komplexes_muster --title "Komplexes Mustersignal" --video
 
+python plot_phasors.py --freqs 1 2 3 4 5 --amps 1 0.5 0.33 0.25 0.2 --phases 90 90 90 90 90 --duration 2 --fs 1000 --save saegezahn --title "Sägezahn-Funktion" --video
