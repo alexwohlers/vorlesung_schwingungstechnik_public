@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 # ffmpeg-Pfad für Matplotlib setzen (Windows, raw string) - MUSS vor Matplotlib-Import stehen
-FFMPEG_PATH = os.path.normpath(r'C:\github\_nosync_ffmpeg\bin\ffmpeg.exe')
+FFMPEG_PATH = os.path.normpath(r'\github\_nosync_tools_ffmpeg\bin\ffmpeg.exe')
 os.environ['MATPLOTLIB_FFMPEG_PATH'] = FFMPEG_PATH
 """
 Phasor-Plot: Visualisiert die komplexe Addition von Sinus-Komponenten als Zeigerdiagramm.

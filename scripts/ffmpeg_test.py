@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-ffmpeg_path = r'C:\github\_nosync_ffmpeg\bin\ffmpeg.exe'
+ffmpeg_path = r'\github\_nosync_tools_ffmpeg\bin\ffmpeg.exe'
 output_path = 'ffmpeg_test_output.mp4'
 cmd = [
     ffmpeg_path,
